@@ -43,6 +43,9 @@ bluemind_imapfilter_configs: [sysadmin.lua]
 bluemind_orig_baremetal: ""
 bluemind_orig_baremetal_ip: ""
 bluemind_postfix_transport_custom: ""
+bluemind_postfix_sender_transport_custom: |
+  /.*/ smtp:
+  # /.*/ relay:[foo.bar.net]
 bluemind_postfix_localaliases: ""
 bluemind_postfix_virtual_alias_local: ""
 bluemind_orig_ip: ""

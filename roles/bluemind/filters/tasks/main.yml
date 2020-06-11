@@ -4,6 +4,7 @@
     dest: "/etc/imapfilter/{{item}}"
     force: true
   with_items: "{{bluemind_imapfilter_configs}}"
+  tags: [imapfilter_configs]
 - name: update & install prerequisites
   package:
     cache_valid_time: 3600
@@ -27,4 +28,6 @@
     dest: "{{bluemind_imapfilter_dir}}/configs/{{item}}"
     src: "/etc/imapfilter/{{item}}"
   with_items: "{{bluemind_imapfilter_configs}}"
+  tags: [imapfilter_configs]
 - include_role: {name: bluemind/filters/crons}
+  tags: [imapfilter_crons]

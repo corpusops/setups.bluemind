@@ -4,6 +4,7 @@
     - {dest: /etc/mailname}
     - {dest: /etc/bm/bm.ini}
     - {dest: /etc/postfix/transport-custom.map}
+    - {dest: /etc/postfix/sender_transport.map}
     - {dest: /etc/postfix/localaliases}
     - {dest: /etc/postfix/virtual_alias_local}
   tags: [layout_confs]
@@ -19,6 +20,7 @@
 - shell: "postmap {{item}}"
   tags: [layout_postmap]
   loop:
+  - /etc/postfix/sender_transport.map
   - /etc/postfix/transport-custom.map
   - /etc/postfix/virtual_alias_local
 - shell: "postalias {{item}}"

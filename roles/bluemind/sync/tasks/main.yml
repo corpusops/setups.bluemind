@@ -8,6 +8,6 @@
   tags: [sync, sync_conf]
   loop: [bm-sync.sh, bm-post-sync.sh, bm-change-url.sh]
 - shell: /sbin/bm-sync.sh
-  tags: [sync, sync_exec]
+  tags: [sync, sync_exec, sync_exec_run]
 - include_role: {name: bluemind/dataprotect}
-  tags: [sync, sync_dataprotect]
+  tags: [sync, sync_exec, sync_dataprotect]
