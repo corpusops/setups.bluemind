@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 ###
 export SDEBUG="${SDEBUG-}"
-export BM_URL="${BM_RL-{{bluemind_ext_mailname}}}"
+export BM_URL="${BM_URL-{{bluemind_ext_mailname}}}"
+export BM_OLD_URL="${BM_OLD_URL-{{bluemind_old_ext_mailname|default('')}}}"
 export BM_ORIG="${BM_ORIG-{{bluemind_orig}}}"
 export ORIG_IP="${ORIG_IP-{{bluemind_orig_ip}}}"
 export DEST_IP="${DEST_IP-{{bluemind_ip}}}"
@@ -58,10 +59,12 @@ if [[ -z $NO_DATA ]];then
         fi
     fi
     if [[ -z $NGINX ]];then
-        sed -i -r \
-            -e 's/(set [$]bmexternalurl )(.*)/\1'"$BM_URL"';/g' \
-            -e "s/server_name .*/server_name $BM_URL;/g" \
-        -i  /etc/nginx/bm-externalurl.conf /etc/nginx/bm-servername.conf
+        if [[ -z $BM_OLD_URL ]];then
+            BM_OLD_URL=$(ssh $BM_ORIG "PGPASSWORD={{bluemind_pg_password}} \
+                psql -d {{bluemind_pg_db}} -h localhost -U {{bluemind_pg_user}} -Aqt \
+                -c \"select configuration->'external-url' from t_systemconf;\"")
+        fi
+        while read f;do sed -i -re "s/$BM_OLD_URL/$BM_URL/g" "$f"; done < <(find /etc/nginx -type f)
     fi
     if [[ -z $NO_DB ]];then
         if [[ -z $NO_DB_RESTORE ]];then
@@ -86,7 +89,10 @@ if [[ -z $NO_DATA ]];then
                     psql -h {{bluemind_pg_host}} -U {{bluemind_pg_user}} -d {{bluemind_pg_db}} \
                     -c "update rc_users set mail_host = '$DEST_IP' where mail_host='$ORIG_IP';"; \
                     psql -h {{bluemind_pg_host}} -U {{bluemind_pg_user}} -d {{bluemind_pg_db}} \
-                    -c "update t_systemconf set configuration = configuration  || hstore('external_url', '$BM_URL') || hstore('host', '$DEST_IP') || hstore('hz-member-address', '$DEST_IP');"; \
+                    -c "update t_systemconf set configuration = configuration \
+                            || hstore('external-url', '$BM_URL') \
+                            || hstore('host', '$DEST_IP') \
+                            || hstore('hz-member-address', '$DEST_IP');"; \
                 fi; \
             )
             die_in_error pgsql fix

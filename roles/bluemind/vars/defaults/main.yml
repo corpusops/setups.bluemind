@@ -14,6 +14,7 @@ bluemind_dest_version: "{{bluemind_version}}"
 bluemind_dest_subscription_file: ""
 bluemind_mailname: "{{inventory_hostname}}"
 bluemind_ext_mailname: mail.foo.net
+bluemind_old_ext_mailname: ""
 bluemind_keep_lasts: 2
 bluemind_keep_days: 2
 bluemind_keep_weeks: 0
