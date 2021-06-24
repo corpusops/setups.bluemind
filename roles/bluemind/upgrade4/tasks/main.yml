@@ -29,10 +29,8 @@
 - pause: {prompt: "launch spools migrations"}
   tags: [upgrade_bm4_sub_prompt]
 - name: disable ES FS checks
-  shell: |-
-    set -ex
-    curl -X PUT "http://localhost:9200/_cluster/settings"   -H 'Content-Type: application/json' -d'{"transient": { "cluster.routing.allocation.disk.watermark.low": "94%","cluster.routing.allocation.disk.watermark.high": "95%","cluster.routing.allocation.disk.watermark.flood_stage": "96%"}}'
-  tags: [es_disable_checks]
+  include_role: {name: bluemind/toggle_es_checks}
+  vars: {toggle_es_checks_cluster_enable: true}
 # 700s/15m
 - name: index mails
   shell: bm-cli mail indexreplicated
@@ -89,14 +87,7 @@
   shell: /usr/share/bm-cyrus/bm-hsm35-migrate-4.sh
   tags: [upgrade_hsm]
 - name: renable ES FS checks
-  shell: |-
-    set -ex
-    curl -X PUT "http://localhost:9200/_cluster/settings"   -H 'Content-Type: application/json' -d'{ "transient": { "cluster.routing.allocation.disk.watermark.low": "80%","cluster.routing.allocation.disk.watermark.high": "90%","cluster.routing.allocation.disk.watermark.flood_stage": "95%"}}'
-  tags: [es_enable_checks]
-- name: fix ES
-  shell: |-
-    set -ex
-    curl -X PUT "http://localhost:9200/_all/_settings" -H 'Content-Type: application/json' -d'{ "index.blocks.read_only_allow_delete" : false }'
-  tags: [es_fix_rorw]
+  include_role: {name: bluemind/toggle_es_checks}
+  vars: {toggle_es_checks_cluster_enable: false}
 - include_role: {name: bluemind/crons}
   tags: [upgrade_crons]

@@ -1,0 +1,35 @@
+- when: toggle_es_checks_cluster_enable|default(False)
+  tags: [toggle_es, disable_checks]
+  block:
+  - uri:
+      method: PUT
+      url: http://localhost:9200/_cluster/settings
+      body:
+        transient:
+          cluster.routing.allocation.disk.watermark.low: "94%"
+          cluster.routing.allocation.disk.watermark.high: "95%"
+          cluster.routing.allocation.disk.watermark.flood_stage: "96%"
+      body_format: json
+    register: toggle_es_checks_cluster
+    tags: [toggle_es_checks, toggle_es_checks_cluster]
+  - uri:
+      method: PUT
+      url: http://localhost:9200/_all/_settings
+      body: {index.blocks.read_only_allow_delete: false}
+      body_format: json
+    register: toggle_es_checks_settings
+    tags: [toggle_es_checks, toggle_es_checks_settings]
+- when: not toggle_es_checks_cluster_enable|default(False)
+  tags: [toggle_es, enable_checks]
+  block:
+  - uri:
+      method: PUT
+      url: http://localhost:9200/_cluster/settings
+      body:
+        transient:
+          cluster.routing.allocation.disk.watermark.low: null
+          cluster.routing.allocation.disk.watermark.high: null
+          cluster.routing.allocation.disk.watermark.flood_stage: null
+      body_format: json
+    register: toggle_es_checks_ecluster
+    tags: [toggle_es_checks, toggle_es_checks_ecluster]
