@@ -81,6 +81,9 @@
      bm-cli maintenance consolidateIndex ${domain}
     done
   tags: [upgrade_index_consolidate]
+- name: "consolidate contacts - todos - cals"
+  include_role: {name: bluemind/reconsolidate}
+  tags: [upgrade_reconsolidate]
 # 7m
 - name: HSM migration
   shell: /usr/share/bm-cyrus/bm-hsm35-migrate-4.sh

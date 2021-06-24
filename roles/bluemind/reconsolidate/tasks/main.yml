@@ -1,0 +1,24 @@
+- uri:
+    method: POST
+    url: https://{{bluemind_ext_mailname}}/api/mgmt/todolists/_reindex
+    headers: "{{bluemind_http_headers}}"
+    body: {}
+    body_format: json
+  register: todopayload
+  tags: [reconsolidate_todo]
+- uri:
+    method: POST
+    url: https://{{bluemind_ext_mailname}}/api/mgmt/addressbooks/_reindex
+    headers: "{{bluemind_http_headers}}"
+    body: {}
+    body_format: json
+  register: contactspayload
+  tags: [reconsolidate_contacs]
+- uri:
+    method: POST
+    url: https://{{bluemind_ext_mailname}}/api/mgmt/calendars/_reindex
+    headers: "{{bluemind_http_headers}}"
+    body: {}
+    body_format: json
+  register: calspayload
+  tags: [reconsolidate_cal]
