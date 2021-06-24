@@ -18,6 +18,7 @@
     shell: bm-cli replication run
     tags: [run]
   tags: [upgrade_prepare_replication]
+# 7m
 - include_role: {name: bluemind/upgrade}
   tags: [upgrade_apt_migrate]
   vars:
@@ -25,9 +26,12 @@
     bluemind_subscription_file: "{{bluemind_dest_subscription_file}}"
 - include_role: {name: bluemind/dataprotect/notinprogress}
   tags: [upgrade_dataprotect]
-- shell: qsdf
 - pause: {prompt: "launch spools migrations"}
   tags: [upgrade_bm4_sub_prompt]
+# 700s/15m
+- name: index mails
+  shell: bm-cli mail indexreplicated
+  tags: [upgrade_index_index]
 - name: imap default folders
   shell: |-
     set -ex
@@ -46,7 +50,7 @@
      time bm-cli maintenance repair --ops replication.subtree ${domain}
     done
   tags: [upgrade_analyze_tree]
-- name: reindex
+- name: reindex parentUid domains
   shell: |-
     set -ex
     domains=$(PGPASSWORD=bj psql -qtA -h localhost bj bj -c "select array_to_string(array(select name from
@@ -55,12 +59,15 @@
      time bm-cli maintenance repair --ops replication.parentUid ${domain}
     done
   tags: [upgrade_analyze_domains]
-- name: HSM migration
-  shell: /usr/share/bm-cyrus/bm-hsm35-migrate-4.sh
-  tags: [upgrade_hsm]
-- name: index mails
-  shell: bm-cli mail indexreplicated
-  tags: [upgrade_index_index]
+#3m
+- name: bluemind can now reindex
+  shell: |-
+    set -ex
+    rm -f /etc/bm/no.mail.indexing
+    systemctl restart bm-core
+  tags: [upgrade_bm_nowreindex]
+# 50s
+# 2h
 - name: consolidate mails indexes
   shell: |-
     domains=$(PGPASSWORD=bj psql -qtA -h localhost bj bj -c "select array_to_string(array(select name from
@@ -69,5 +76,13 @@
      bm-cli maintenance consolidateIndex ${domain}
     done
   tags: [upgrade_index_consolidate]
+# 7m
+- name: HSM migration
+  shell: /usr/share/bm-cyrus/bm-hsm35-migrate-4.sh
+  tags: [upgrade_hsm]
+- name: fix ES
+  shell: |-
+    set -ex
+    curl -X PUT "http://localhost:9200/_all/_settings" -H 'Content-Type: application/json' -d'{ "index.blocks.read_only_allow_delete" : false }'
 - include_role: {name: bluemind/crons}
   tags: [upgrade_crons]

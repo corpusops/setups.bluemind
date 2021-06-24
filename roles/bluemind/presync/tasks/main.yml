@@ -1,6 +1,6 @@
 - shell: |-
     set -ex
-    {{bluemind_sync_rsync}} {{bluemind_sync_rsync_orig}}/ {{bluemind_sync_rsync_dest}}/
+    {{bluemind_sync_rsyncd}} {{bluemind_sync_rsync_orig}}/ {{bluemind_sync_rsync_dest}}/
   tags: [presync_sync]
 - shell: |-
     set -ex

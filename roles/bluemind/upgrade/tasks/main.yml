@@ -1,13 +1,18 @@
 - block:
   - include_role: {name: bluemind/apt}
-  - package:
+  - name: bluemind run distupgrade
+    package:
       cache_valid_time: 1
-      update_cache: yes
+      update_cache: true
       upgrade: dist
-      allow_unauthenticated: yes
+      allow_unauthenticated: true
       force_apt_get: true
   tags: [upgrade_apt_dist_upgrade]
 - name: launch database upgrade
   shell: bm-cli setup upgrade
+  register: bmup
+  failed_when: "not (
+    bmup.rc==0 or
+    (bmup.rc==3 and
+    (bmup.stderr|regex_search('Upgrade Complete: Success'))))"
   tags: [upgrade_db]
-- shell: qsdf

@@ -1,5 +1,5 @@
-- hosts: "{{bluemind_servers|default('all')}}"
-  gather_facts: "{{get_facts|default(not bluemind_roles|regex_search('migrate'))}}"
+- hosts: "{{bluemind_servers|default('do_not_execute_me')}}"
+  gather_facts: "{{get_facts|default(not bluemind_roles|regex_search('migrate|teleport'))}}"
   tasks:
   - include_tasks: exec_role.yml
     loop: "{{bluemind_roles.split(',')}}"

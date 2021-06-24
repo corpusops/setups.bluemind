@@ -114,7 +114,9 @@ bluemind_spamcollect_ham_dir:  /var/spool/cyrus/data/foo_com/domain/f/foo/h/spam
 bluemind_mail_api_user: admin0@global.virt
 ### end spam managment
 bluemind_sync_rsync: "rsync -AHazv --numeric-ids \
-  --exclude=\"var/lib/fail2ban\" \
+  --exclude=\"/tmp/\" \
+  --exclude=\"var/lib/fail2ban/fail2ban.sqlite3\" \
+  --exclude=\"var/spool/bm-tika/cache/\" \
   --exclude=\"var/log\" \
   --exclude=\"srv/backups\" \
   --exclude=\"etc/hosts\" \
@@ -151,7 +153,7 @@ bluemind_imapfilter_cron: |-
 
 bluemind_bm_cli_ini: |
   #
-  MEM=1500
+  MEM=2000
   #
 bluemind_bm_es_mem: 2000
 bluemind_bm_es_ini: |-
@@ -184,7 +186,7 @@ bluemind_debconf: |-
 bluemind_apt_base_pkgs: [bm-full, jq, bm-plugin-cli-setup, bm-plugin-core-ldap-import, bm-connector-thunderbird]
 bluemind_apt_pkgs: |
   {%- set pkgs =  bluemind_apt_base_pkgs[:] %}
-  {%- if bluemind_version >= '3.5' %}
+  {%- if (bluemind_version|string|copsf_looseversion) >= ('3.5'|copsf_looseversion) %}
   {%-  set _ = pkgs.extend(['bm-plugin-admin-console-ldap-import', 'bm-plugin-core-lic', 'bm-core-upgraders']) %}
   {%- endif %}
   {{-pkgs|to_json}}

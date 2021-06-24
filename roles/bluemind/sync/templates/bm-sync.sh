@@ -54,6 +54,7 @@ if [[ -z $NO_DATA ]];then
         $RSYNCD ${BM_ORIG}:/var/spool/bm-hsm/           $SYNC_PREFIX/var/spool/bm-hsm/
         $RSYNCD ${BM_ORIG}:/var/spool/sieve/            $SYNC_PREFIX/var/spool/sieve/
         $RSYNCD ${BM_ORIG}:/var/spool/bm-docs/          $SYNC_PREFIX/var/spool/bm-docs/
+        $RSYNCD ${BM_ORIG}:/var/spool/bm-replication/   $SYNC_PREFIX/var/spool/bm-replication/
         if [[ -z $NO_ES ]];then
             $RSYNCD ${BM_ORIG}:/var/spool/bm-elasticsearch/ $SYNC_PREFIX/var/spool/bm-elasticsearch/
         fi
