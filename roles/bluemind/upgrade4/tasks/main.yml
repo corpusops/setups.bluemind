@@ -10,7 +10,8 @@
 - include_role: {name: bluemind/disable_crons}
   tags: [upgrade_disable_crons]
 # 368m14,872s
-- block:
+- when: force_redo_replication|default(false)
+  block:
   - shell: bm-cli replication prepare
     changed_when: false
     tags: [prepare]

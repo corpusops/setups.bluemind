@@ -7,5 +7,5 @@
   with_items: [bm]
   tags: [fw_conf]
 - shell: service ms_iptables restart
-  when: "{{fwcopy.changed}}"
+  when: fwcopy.changed
   tags: [fw_exec]
