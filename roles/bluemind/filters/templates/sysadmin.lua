@@ -17,7 +17,7 @@ DEFAULT_FOLDERS={DEFAULT_FOLDER}
 -- Connects to "imap1.mail.server", as user "user1" with "secret1" as
 -- password.
 account = IMAP {
-    server = '{{bluemind_ext_mailname}}',
+    server = '{{bluemind_imapfilter_host}}',
     username = 'foo',
     password = 'bar',
 }
