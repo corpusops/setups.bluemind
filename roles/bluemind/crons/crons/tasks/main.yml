@@ -1,3 +1,5 @@
-- include_role: {name: bluemind/crons/crons}
-- include_role: {name: bluemind/spamcollect/crons}
-- include_role: {name: bluemind/filters/crons}
+- copy:
+    force: true
+    content: "{{bluemind_reboot_cron}}"
+    dest: /etc/cron.d/reboot_services
+    mode: "0644"
