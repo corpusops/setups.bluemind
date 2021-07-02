@@ -2,4 +2,4 @@
     force: true
     content: "{{bluemind_reboot_cron}}"
     dest: /etc/cron.d/reboot_services
-    mode: 644
+    mode: "0644"
