@@ -1,5 +1,6 @@
 - block:
   - include_role: {name: bluemind/apt}
+    tags: [configure_apt]
   - name: bluemind run distupgrade
     package:
       cache_valid_time: 1

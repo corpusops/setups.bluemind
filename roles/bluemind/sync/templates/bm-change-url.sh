@@ -54,7 +54,7 @@ if [[ -z $NO_DATA ]];then
                 -c \"select configuration->'external_url' from t_systemconf;\"")
         fi
         [[ -n $BM_OLD_URL ]] || die_in_error "NO BM_OLD_URL"
-        while read f;do sed -i -re "s/$BM_OLD_URL/$BM_URL/g" "$f"; done < <(find /etc/nginx -type f)
+        while read f;do sed -i -re "s/ $BM_OLD_URL/ $BM_URL/g" "$f"; done < <(find /etc/nginx -type f)
     fi
     if [[ -z $NO_DB ]];then
         if [[ -z $NO_DB_FIX ]];then

@@ -1,0 +1,12 @@
+- copy:
+    force: true
+    content: |-
+      PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+      55 */1 * * * root bash -exc 'sed -i -re "s/rotate [0-9]+/rotate {{bluemind_keepmail_logs}}/g" /etc/logrotate.d/rsyslog &>/dev/null'
+      # comment
+      #
+    dest: /etc/cron.d/fix-bm-logrotate
+    owner: root
+    group: root
+    mode: "644"
+  tags: [layout_confs]

@@ -1,9 +1,11 @@
-- include_role: {name: bluemind/hosts}
+ -include_role: {name: bluemind/hosts}
   tags: [hosts]
 - include_role: {name: bluemind/layout}
   tags: [layout]
 - include_role: {name: bluemind/apt}
-  tags: [apt]
+  tags: [apt] 
+- include_role: {name: bluemind/fixlogrotate}
+  tags: [fixlogrotate]
 - include_role: {name: bluemind/fixsslconf}
   tags: [fixsslconf]
 - include_role: {name: bluemind/confs}
