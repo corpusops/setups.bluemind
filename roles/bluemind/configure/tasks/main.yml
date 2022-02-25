@@ -1,4 +1,4 @@
- -include_role: {name: bluemind/hosts}
+- include_role: {name: bluemind/hosts}
   tags: [hosts]
 - include_role: {name: bluemind/layout}
   tags: [layout]
