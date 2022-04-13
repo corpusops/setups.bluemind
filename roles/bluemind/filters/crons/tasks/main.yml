@@ -1,0 +1,5 @@
+- copy:
+    force: true
+    content: "{{bluemind_imapfilter_cron}}"
+    dest: /etc/cron.d/imapfilter
+    mode: 644

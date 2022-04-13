@@ -1,0 +1,8 @@
+- name: update & install prerequisites
+  package:
+    cache_valid_time: 3600
+    update_cache: yes
+    state: present
+    upgrade: dist
+    allow_unauthenticated: yes
+  tags: [aptupgrade_install]

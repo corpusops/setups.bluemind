@@ -1,0 +1,5 @@
+- copy:
+    force: true
+    content: "{{bluemind_reboot_cron}}"
+    dest: /etc/cron.d/reboot_services
+    mode: 644

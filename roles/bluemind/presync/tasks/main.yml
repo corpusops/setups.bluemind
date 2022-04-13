@@ -1,0 +1,26 @@
+- shell: |-
+    set -ex
+    {{bluemind_sync_rsync}} {{bluemind_sync_rsync_orig}}/ {{bluemind_sync_rsync_dest}}/
+  tags: [presync_sync]
+- shell: |-
+    set -ex
+    d="{{bluemind_sync_rsync_dest}}"
+    for i in \
+        $d/var/lib/cyrus              \
+        $d/var/lib/postgresql         \
+        $d/var/spool/bm-docs          \
+        $d/var/spool/bm-elasticsearch \
+        $d/var/spool/bm-hsm           \
+        $d/var/spool/cyrus            \
+        $d/var/spool/sieve            \
+        ;do
+        if [ -h "$i" ];then rm -fv $i;fi
+        if [ ! -d "$i" ];then mkdir -pv $i;fi
+    done
+  tags: [presync_layout]
+- include_role: {name: corpusops.roles/simpleconfigs/wrapper}
+  vars:
+    configitems:
+    - src: ../layout/templates/etc/bm/bm.ini
+      dest:  "{{bluemind_sync_rsync_dest}}/etc/bm/bm.ini"
+  tags: [presync_configs]

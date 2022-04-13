@@ -1,0 +1,17 @@
+---
+- file:
+    state: directory
+    path: "{{item}}"
+  with_items: "{{bluemind_datadirs + bluemind_backupdirs}}"
+  tags: [layout_confs]
+- file:
+    state: directory
+    dest: "{{item}}"
+    owner: cyrus
+    group: mail
+  loop: [/var/spool/bm-hsm, /var/spool/bm-hsm/cyrus-archives]
+- file:
+    state: link
+    src: "{{bluemind_mnt_data}}"
+    dest: "/data"
+  tags: datadirs

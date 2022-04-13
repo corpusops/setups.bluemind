@@ -1,0 +1,12 @@
+---
+- template:
+    src: bm-sync.sh
+    dest: /sbin/bm-sync.sh
+    mode: "750"
+    force: true
+    trim_blocks: false
+  tags: [sync, sync_conf]
+- shell: /sbin/bm-sync.sh
+  tags: [sync, sync_exec]
+- include_role: {bluemind/dataprotect}
+  tags: [sync, sync_dataprotect]

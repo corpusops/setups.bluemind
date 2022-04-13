@@ -1,0 +1,7 @@
+---
+- name: breakpoint
+  pause:
+    prompt: |
+     Go to https://{{bluemind_ext_mailname}}/setup !
+     To resume: http://docs.ansible.com/ansible/pause_module.html
+  tags: pause

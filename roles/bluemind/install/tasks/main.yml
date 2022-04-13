@@ -1,0 +1,6 @@
+---
+- {include_role: {name: bluemind/backups,    tags: backups}
+- {include_role: {name: bluemind/fw,         tags: fw}
+- {include_role: {name: bluemind/layout,     tags: layout}
+- {include_role: {name: bluemind/apt,        tags: apt}
+- {include_role: {name: bluemind/breakpoint, tags: pause}

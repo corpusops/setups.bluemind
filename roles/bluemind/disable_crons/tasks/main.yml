@@ -1,0 +1,4 @@
+- file: {state: absent, dest: "/etc/cron.d/{{item}}"}
+  loop: [reboot_services, imapfilter, spamcollect, spamcleanupjunk]
+  tags: [upgrade_disablecron]
+

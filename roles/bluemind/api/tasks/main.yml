@@ -1,0 +1,21 @@
+---
+- copy:
+    src: '../bmapi/'
+    dest: '/srv/apps/bmapi/'
+    force: true
+  tags: sync_api
+- pip:
+    requirements: /srv/apps/bmapi/requirements.txt
+    virtualenv: /srv/apps/bmapi/venv
+- copy:
+    dest: /srv/apps/bmapi/{{item}}.sh
+    content: |
+      set -ex
+      cd /srv/apps/bmapi
+      export MAIL_USER="{{mail_api_user}}"
+      export MAIL_PW="{{mail_passwords[mail_api_user]}}"
+      . venv/bin/activate
+      python  {{item}}.py
+    mode: "700"
+    force: true
+  with_items: ['export_users', 'repair_users']

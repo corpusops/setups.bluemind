@@ -1,0 +1,30 @@
+---
+- template:
+    src: "{{bluemind_imapfilter_folder}}/{{item}}"
+    dest: "/etc/imapfilter/{{item}}"
+    force: true
+  with_items: "{{bluemind_imapfilter_configs}}"
+- name: update & install prerequisites
+  package:
+    cache_valid_time: 3600
+    update_cache: yes
+    package: '{{item}}'
+    state: present
+    allow_unauthenticated: yes
+  with_items: "{{bluemind_imapfilter_pkgs}}"
+  tags: [imapsync_packages]
+- git:
+    repo: "{{bluemind_imapfilter_repo}}"
+    dest: "{{bluemind_imapfilter_dir}}"
+    version: "{{bluemind_imapfilter_branch}}"
+  tags: [imapfilter_git]
+- shell: |
+    cd "{{bluemind_imapfilter_dir}}"
+    make
+  tags: [imapfilter_make]
+- file:
+    state: link
+    dest: "{{bluemind_imapfilter_dir}}/configs/{{item}}"
+    src: "/etc/imapfilter/{{item}}"
+  with_items: "{{bluemind_imapfilter_configs}}"
+- include_role: {name: bluemind/filters/crons}

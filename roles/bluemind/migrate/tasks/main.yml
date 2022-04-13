@@ -1,0 +1,22 @@
+- block:
+  - debug:
+      msg:
+        a: "{{inventory_hostname}}"
+        b: "{{bluemind_lxc_name}}"
+        c: "{{bluemind_baremetal}}"
+    when: "bluemind_debug_test|default(false)"
+  - include_role: {name: bluemind/hardstop}
+    tags: [stop, hardstop, migrate_stop]
+  - include_role: {name: bluemind/presync}
+    tags: [presync, migrate_presync]
+  - include_role: {name: bluemind/restart}
+    tags: [start, restart, migrate_restart]
+  delegate_to: "{{bluemind_baremetal}}"
+- setup: {}
+  tags: [facts, migrate_facts]
+- include_role: {name: bluemind/configure}
+  tags: [configure, migrate_configure]
+- include_role: {name: bluemind/sync}
+  tags: [sync, migrate_sync]
+- include_role: {name: bluemind/upgrade4}
+  tags: [upgrade4, migrate_upgrade4]

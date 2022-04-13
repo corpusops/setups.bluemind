@@ -1,0 +1,11 @@
+---
+- file: {dest: /etc/ms_iptables.d, state: directory}
+- template:
+    dest: "/etc/ms_iptables.d/{{item}}.json"
+    src: "{{item}}.json"
+  register: fwcopy
+  with_items: [bm]
+  tags: [fw_conf]
+- shell: service ms_iptables restart
+  when: "{{fwcopy.changed}}"
+  tags: [fw_exec]

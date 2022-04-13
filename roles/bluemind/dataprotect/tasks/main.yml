@@ -1,0 +1,21 @@
+- set_fact:
+    cacheable: false
+    bluemind_dataprotect_payload: "{{(bluemind_dataprotect and
+      bluemind_dataprotect_payload_enabled or
+      bluemind_dataprotect_payload_disabled)}}"
+  tags: [dataprotect_state_set]
+- uri:
+    method: POST
+    url: https://{{bluemind_ext_mailname}}/api/scheduledjobs/_updateJob
+    headers: "{{bluemind_http_headers}}"
+    body: "{{bluemind_dataprotect_payload}}"
+    body_format: json
+  register: payload
+  tags: [dataprotect_state_apply]
+- name: ensure backup state is applied
+  uri:
+    url: https://{{bluemind_ext_mailname}}/api/scheduledjobs/_job/DataProtect
+    headers: "{{bluemind_http_headers}}"
+  register: fpayload
+  failed_when: fpayload.json['domainPlanification'][0]['kind'] != bluemind_dataprotect_payload['domainPlanification'][0]['kind']
+  tags: [dataprotect_statecheck]

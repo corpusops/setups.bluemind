@@ -1,0 +1,7 @@
+- block:
+  - shell: cat /etc/bm/bm-core.tok
+    register: bluemind_tokenc
+  - set_fact:
+      cacheable: false
+      bluemind_api_token: "{{bluemind_tokenc.stdout.strip()}}"
+  when: not bluemind_api_token

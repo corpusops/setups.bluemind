@@ -1,0 +1,28 @@
+- shell: "cpanm Data::Uniqid Mail::IMAPClient"
+  tags: [imapsync_cpan]
+- template:
+    src: "{{item}}"
+    dest: "/root/{{item}}"
+    force: true
+    mode: "700"
+  with_items: [spamcollect.sh, spam_cleanupjunks.sh]
+- group: {name: spamcollect, state: present}
+- user: {name: spamcollect, group: spamcollect, groups: "spamcollect,sshusers"}
+- name: sshauthkeys
+  authorized_key:
+    user: "spamcollect"
+    key: "{{item}}"
+  with_items: "{{bluemind_spamcollect_keys}}"
+- git:
+    repo: "{{bluemind_imapsync_repo}}"
+    dest: "{{bluemind_imapsync_dir}}"
+    version: "{{bluemind_imapsync_branch}}"
+- file:
+    state: link
+    dest: "/usr/local/bin/imapsync"
+    src: "{{bluemind_imapsync_dir}}/imapsync"
+- copy:
+    content: |
+      spamcollect ALL=(ALL) NOPASSWD:/root/spamcollect.sh
+    dest: /etc/sudoers.d/spamcollect
+- include_role: {name: bluemind/spamcollect/crons}

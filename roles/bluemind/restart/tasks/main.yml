@@ -1,0 +1,2 @@
+- shell: "lxc-stop -k -n {{bluemind_lxc_name}} || /bin/true"
+- shell: "lxc-start -d -n {{bluemind_lxc_name}}"

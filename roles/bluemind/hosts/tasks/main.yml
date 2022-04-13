@@ -1,0 +1,18 @@
+- blockinfile:
+    unsafe_writes: true
+    dest: /etc/hosts
+    marker: "# {mark} bluemind hosts - end"
+    insertafter: EOF
+    block: |
+      #
+      {{bluemind_ip}} {{bluemind_mailname}} {{bluemind_ext_mailname}}
+      #
+- blockinfile:
+    unsafe_writes: true
+    dest: /etc/hosts
+    marker: "# {mark} bluemind hosts - start"
+    insertbefore: BOF
+    block: |
+      #
+      {{bluemind_ip}} {{bluemind_mailname}} {{bluemind_ext_mailname}}
+      #

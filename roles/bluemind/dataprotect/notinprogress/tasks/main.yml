@@ -1,0 +1,7 @@
+- name: ensure no backup running
+  uri:
+    url: https://{{bluemind_ext_mailname}}/api/scheduledjobs/_job/DataProtect
+    headers: "{{bluemind_http_headers}}"
+  register: dataprotect_notinprogress
+  failed_when: dataprotect_notinprogress.json['domainStatus'][0]['status'] == 'IN PROGRESS'
+  tags: [dataprotect_notinprogress]

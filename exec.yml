@@ -1,0 +1,6 @@
+- hosts: "{{bluemind_servers|default('all')}}"
+  gather_facts: "{{get_facts|default(not bluemind_roles|regex_search('migrate'))}}"
+  tasks:
+  - include_tasks: exec_role.yml
+    loop: "{{bluemind_roles.split(',')}}"
+

@@ -1,0 +1,20 @@
+- include_role: {name: bluemind/hosts}
+  tags: [hosts]
+- include_role: {name: bluemind/layout}
+  tags: [layout]
+- include_role: {name: bluemind/apt}
+  tags: [apt]
+- include_role: {name: bluemind/nginxdh}
+  tags: [nginxdh]
+- include_role: {name: bluemind/confs}
+  tags: [confs]
+- include_role: {name: bluemind/filters}
+  tags: [filters]
+- include_role: {name: bluemind/spamcollect}
+  tags: [spamcollect]
+- include_role: {name: bluemind/crons}
+  tags: [crons]
+- include_role: {name: bluemind/fw}
+  tags: [fw]
+- include_role: {name: bluemind/backups}
+  tags: [backups]

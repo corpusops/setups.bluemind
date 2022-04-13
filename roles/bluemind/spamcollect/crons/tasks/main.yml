@@ -1,0 +1,10 @@
+- copy:
+    content: "{{bluemind_spamcollect_cron}}"
+    dest: /etc/cron.d/spamcollect
+    force: true
+    mode: 644
+- copy:
+    force: true
+    content: "{{bluemind_spamcleanup_cron}}"
+    dest: /etc/cron.d/spamcleanupjunk
+    mode: 644

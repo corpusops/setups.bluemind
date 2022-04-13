@@ -1,0 +1,73 @@
+# reconfigure bm's ini files
+- assert: {that: "bluemind_version != bluemind_dest_version"}
+- include_role: {name: bluemind/dataprotect}
+  vars: {bluemind_dataprotect: false}
+  tags: [upgrade_dataprotect]
+- include_role: {name: bluemind/aptupgrade}
+  tags: [upgrade_apt]
+- include_role: {name: bluemind/configure}
+  tags: [upgrade_configure]
+- include_role: {name: bluemind/disable_crons}
+  tags: [upgrade_disable_crons]
+# 368m14,872s
+- block:
+  - shell: bm-cli replication prepare
+    changed_when: false
+    tags: [prepare]
+  - name: do replication preparation
+    shell: bm-cli replication run
+    tags: [run]
+  tags: [upgrade_prepare_replication]
+- include_role: {name: bluemind/upgrade}
+  tags: [upgrade_apt_migrate]
+  vars:
+    bluemind_version: "{{bluemind_dest_version}}"
+    bluemind_subscription_file: "{{bluemind_dest_subscription_file}}"
+- include_role: {name: bluemind/dataprotect/notinprogress}
+  tags: [upgrade_dataprotect]
+- shell: qsdf
+- pause: {prompt: "launch spools migrations"}
+  tags: [upgrade_bm4_sub_prompt]
+- name: imap default folders
+  shell: |-
+    set -ex
+    domains=$(PGPASSWORD=bj psql -qtA -h localhost bj bj -c "select array_to_string(array(select name from
+    t_domain), ' ');")
+    for domain in ${domains}; do
+      time bm-cli maintenance repair --ops mailboxDefaultFolders ${domain}
+    done
+  tags: [upgrade_defaultfolders]
+- name: analyze
+  shell: |-
+    set -ex
+    domains=$(PGPASSWORD=bj psql -qtA -h localhost bj bj -c "select array_to_string(array(select name from
+    t_domain), ' ');")
+    for domain in ${domains}; do
+     time bm-cli maintenance repair --ops replication.subtree ${domain}
+    done
+  tags: [upgrade_analyze_tree]
+- name: reindex
+  shell: |-
+    set -ex
+    domains=$(PGPASSWORD=bj psql -qtA -h localhost bj bj -c "select array_to_string(array(select name from
+    t_domain), ' ');")
+    for domain in ${domains}; do
+     time bm-cli maintenance repair --ops replication.parentUid ${domain}
+    done
+  tags: [upgrade_analyze_domains]
+- name: HSM migration
+  shell: /usr/share/bm-cyrus/bm-hsm35-migrate-4.sh
+  tags: [upgrade_hsm]
+- name: index mails
+  shell: bm-cli mail indexreplicated
+  tags: [upgrade_index_index]
+- name: consolidate mails indexes
+  shell: |-
+    domains=$(PGPASSWORD=bj psql -qtA -h localhost bj bj -c "select array_to_string(array(select name from
+    t_domain), ' ');")
+    for domain in ${domains}; do
+     bm-cli maintenance consolidateIndex ${domain}
+    done
+  tags: [upgrade_index_consolidate]
+- include_role: {name: bluemind/crons}
+  tags: [upgrade_crons]

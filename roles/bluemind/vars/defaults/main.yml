@@ -1,0 +1,189 @@
+---
+bluemind_subscriptions_folder: "{{role_path}}/../../../data"
+bluemind_subscriptions_dest: "{{bluemind_subscriptions_folder}}/{{bluemind_version}}"
+bluemind_repo_file_path: /etc/apt/sources.list.d/bm.list
+bluemind_nginx_dh: "/etc/nginx/bm_dhparam.pem"
+bluemind_no_mails: ""
+bluemind_no_data: ""
+bluemind_no_db_restore: ""
+bluemind_no_db_fix: ""
+bluemind_version: "3.5"
+# bluemind_subscription_file: "201xx.bmz"
+bluemind_subscription_file: ""
+bluemind_dest_version: "{{bluemind_version}}"
+# bluemind_dest_version: "4.5"
+bluemind_dest_subscription_file: ""
+bluemind_mailname: "{{inventory_hostname}}"
+bluemind_ext_mailname: mail.foo.net
+bluemind_keep_lasts: 2
+bluemind_keep_days: 2
+bluemind_keep_weeks: 0
+bluemind_keep_monthes: 0
+bluemind_keep_logs: 7
+bluemind_mnt_data: /mnt/bm-data
+bluemind_imapsync_repo: https://github.com/imapsync/imapsync.git
+bluemind_imapsync_branch: 2ab41adc87e2775364c8f6fd8fd9b05666647acb
+bluemind_imapsync_dir: /srv/imapsync
+bluemind_imapfilter_repo: https://github.com/makinacorpus/imapfilter.git
+bluemind_imapfilter_branch: master
+bluemind_imapfilter_dir: /srv/imapfilter
+bluemind_mnt_backups: /mnt/bm-backups
+bluemind_datadirs: [/var/lib/cyrus, /var/spool/bm-docs, /var/spool/bm-elasticsearch, /var/spool/bm-hsm, /var/spool/cyrus, /var/spool/sieve, /var/spool/bm-hsm/cyrus-archives, /var/lib/postgresql]
+bluemind_backupdirs: [/var/backups/bluemind]
+bluemind_spamcollect_keys: []
+#- "ssh-rsa xxx root@xx"
+bluemind_ip: "{{ansible_default_ipv4.address}}"
+bluemind_allowed_ips: ["{{bluemind_ip}}", "{{bluemind_orig_ip}}"]
+bluemind_allowed_ports: [22, 25, 110, 143, 465, 993, 995]
+bluemind_antispam_name: antispam.foo.com
+bluemind_imapfilter_configs: [sysadmin.lua]
+# To define in inventory
+bluemind_orig_baremetal: ""
+bluemind_orig_baremetal_ip: ""
+bluemind_postfix_transport_custom: ""
+bluemind_postfix_localaliases: ""
+bluemind_postfix_virtual_alias_local: ""
+bluemind_orig_ip: ""
+bluemind_orig: ""
+bluemind_orig_lxc_name: ""
+bluemind_baremetal: ""
+# bluemind_orig_baremetal: "bm.net"
+# bluemind_orig_baremetal_ip: "bm.net"
+# bluemind_orig_ip: "1.2.3.5"
+# bluemind_orig: mail.foo.com
+# bluemind_orig_lxc_name: "old-{{inventory_hostname}}"
+bluemind_lxc_name: "{{inventory_hostname}}"
+bluemind_dbsmartbackup_settings: |-
+  BACKUP_TYPE=postgresql
+  KEEP_LASTS={{bluemind_keep_lasts}}
+  KEEP_DAYS={{bluemind_keep_days}}
+  KEEP_WEEKS={{bluemind_keep_weeks}}
+  KEEP_MONTHES={{bluemind_keep_monthes}}
+  KEEP_LOGS={{bluemind_keep_logs}}
+  PGPASSWORD={{bluemind_pg_password}}
+  POSTGRES_USER={{bluemind_pg_user}}
+  POSTGRES_PORT={{bluemind_pg_port}}
+  POSTGRES_HOST={{bluemind_pg_host}}
+  PGPASSWD={{bluemind_pg_password}}
+  DBNAMES={{bluemind_pg_db}}
+bluemind_orig_pg_password: "{{bluemind_pg_password}}"
+bluemind_orig_pg_host: "{{bluemind_pg_host}}"
+bluemind_orig_pg_port: "{{bluemind_pg_port}}"
+bluemind_orig_pg_user: "{{bluemind_pg_user}}"
+bluemind_orig_pg_db: "{{bluemind_pg_db}}"
+bluemind_pg_password: bj
+bluemind_pg_host: 127.0.0.1
+bluemind_pg_port: 5432
+bluemind_pg_user: bj
+bluemind_pg_db: bj
+bluemind_dbsmartbackup_cron: |-
+  MAILTO=
+  PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+  0 2 * * * root /srv/apps/dbsmartbackup/run_dbsmartbackups.sh --quiet --no-colors
+bluemind_imapfilter_pkgs: "{{bluemind_imapfilter_pkgs_common+bluemind_imapfilter_pkgs_1604}}"
+bluemind_imapfilter_pkgs_1604: ["liblua5.2-dev", "liblua5.2-0"]
+bluemind_imapfilter_pkgs_common:
+- "libpcre3-dev"
+- "libauthen-ntlm-perl"
+- "libcrypt-ssleay-perl"
+- "libdigest-hmac-perl"
+- "libfile-copy-recursive-perl"
+- "libio-compress-perl"
+- "libio-socket-inet6-perl"
+- "libio-socket-ssl-perl"
+- "libio-tee-perl"
+- "libmodule-scandeps-perl"
+- "libnet-ssleay-perl"
+- "libpar-packer-perl"
+- "libreadonly-perl"
+- "libterm-readkey-perl"
+- "libtest-pod-perl"
+- "libtest-simple-perl"
+- "libunicode-string-perl"
+- "liburi-perl"
+- "cpanminus"
+bluemind_hard_sync: false
+bluemind_imapfilter_folder: ../templates
+### spam managment: to redefine with real values in inventory
+bluemind_spamcollect_syncscript: ""
+#  imapsync  --host1 "localhost" --port1 "143" --user1 "user@foo.com"  --password1 "foobar" \
+#        --host2 "localhost" --port2 "143" --user2 "user@foo.com"  --password2 "foobar" \
+#        --folder "$shared/spamcollector" --folder "$shared/spamcollector/ham" --regextrans2 "s/spamcollector/spamdatabase/" --nolog --syncinternaldates --expunge1 --delete
+bluemind_spamcollect_spam_dir: /var/spool/cyrus/data/foo_com/domain/f/foo/v/spamdatabase/
+bluemind_spamcollect_ham_dir:  /var/spool/cyrus/data/foo_com/domain/f/foo/h/spamdatabase/
+bluemind_mail_api_user: admin0@global.virt
+### end spam managment
+bluemind_sync_rsync: "rsync -AHazv --numeric-ids \
+  --exclude=\"var/lib/fail2ban\" \
+  --exclude=\"var/log\" \
+  --exclude=\"srv/backups\" \
+  --exclude=\"etc/hosts\" \
+  --exclude=\"etc/hostname\" \
+  --exclude=\"etc/duplicity*\" \
+  --exclude=\"etc/cron.d/*burp*\" \
+  --exclude=\"etc/*burp*\" \
+  --exclude=\"etc/burp*\" \
+  --exclude=\"etc/network*\" \
+  --exclude=\"etc/netplan*\""
+bluemind_sync_rsync_orig: "{{bluemind_orig_baremetal_ip}}:/var/lib/lxc/{{bluemind_orig_lxc_name}}/rootfs"
+bluemind_sync_rsync_dest: "/var/lib/lxc/{{bluemind_lxc_name}}/rootfs/"
+bluemind_mailshare_path: "Dossiers partag&AOk-s"
+bluemind_spamcleanup_cron: |
+  MAILTO=""
+  PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+  0 6 1,15,29 * *  root su -c "/root/spam_cleanupjunks.sh  >/dev/null 2>&1"
+bluemind_reboot_cron: |-
+  # handle bluemind broken logrotates
+  MAILTO=""
+  PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+  0 3 * * * root /bin/sh -c '/usr/sbin/service rsyslog  restart >/dev/null 2>&1'
+  10 3 * * * root /bin/sh -c '/usr/sbin/service postfix  restart >/dev/null 2>&1'
+  10 3 * * * root /bin/sh -c '/usr/sbin/service bm-nginx restart >/dev/null 2>&1'
+bluemind_spamcollect_cron: |-
+  MAILTO=""
+  PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+  0,5,10,15,20,25,30,35,40,45,50,55 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23 * * *  root su -c "/root/spamcollect.sh >/dev/null 2>&1"
+bluemind_imapfilter_cron: |-
+  MAILTO=""
+  PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+  */2 * * * * root /srv/imapfilter/configs/imapfilter_cron.sh >/dev/null 2>&1
+
+bluemind_bm_cli_ini: |
+  #
+  MEM=1500
+  #
+bluemind_bm_es_mem: 2000
+bluemind_bm_es_ini: |-
+  #
+  MEM={{bluemind_bm_es_mem}}
+  DMEM={{bluemind_bm_es_mem}}
+  #
+bluemind_api_token: ""
+bluemind_http_headers: {X-BM-ApiKey: "{{bluemind_api_token.strip()}}"}
+bluemind_dataprotect_payload_disabled:
+  domainStatus: []
+  domainPlanification: [{kind: DISABLED, domain: global.virt}]
+  id: DataProtect
+  description: ""
+  kind: GLOBAL
+  sendReport: false
+bluemind_dataprotect_cron: "0 0 22 ? * MON,TUE,WED,THU,FRI,SAT,SUN *"
+bluemind_dataprotect_payload_enabled:
+  domainStatus: []
+  domainPlanification:
+  - {kind: SCHEDULED, domain: global.virt,
+     rec: {cronString: "{{bluemind_dataprotect_cron}}"}}
+  id: DataProtect
+  description: ""
+  kind: GLOBAL
+  sendReport: false
+bluemind_dataprotect: true
+bluemind_debconf: |-
+  postfix postfix/main_mailer_type No configuration
+bluemind_apt_base_pkgs: [bm-full, jq, bm-plugin-cli-setup, bm-plugin-core-ldap-import, bm-connector-thunderbird]
+bluemind_apt_pkgs: |
+  {%- set pkgs =  bluemind_apt_base_pkgs[:] %}
+  {%- if bluemind_version >= '3.5' %}
+  {%-  set _ = pkgs.extend(['bm-plugin-admin-console-ldap-import', 'bm-plugin-core-lic', 'bm-core-upgraders']) %}
+  {%- endif %}
+  {{-pkgs|to_json}}

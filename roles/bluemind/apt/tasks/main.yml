@@ -1,0 +1,40 @@
+- block:
+  - file: {state: directory, path: "{{item}}"}
+    loop: ["{{bluemind_subscriptions_dest}}"]
+  - name: Install your subscribe file
+    unarchive:
+      src: "{{bluemind_subscriptions_folder}}/{{bluemind_subscription_file}}"
+      dest: "{{bluemind_subscriptions_dest}}"
+      owner: root
+      copy: no
+  delegate_to: localhost
+- name: copy bluemind repository file into the server
+  copy:
+    src: "{{bluemind_subscriptions_dest}}/{{ansible_distribution_release}}"
+    dest: "{{bluemind_repo_file_path}}"
+    mode: 0644
+    owner: root
+    group: root
+  register: copybmlist
+- name: adding bluemind public key
+  apt_key: { url: https://pkg.bluemind.net/bluemind-deb.asc, state: present}
+  tags: [apt_key]
+- shell: |
+    set -ex
+    cat|debconf-set-selections << EOF
+    {{bluemind_debconf}}
+    EOF
+  tags: [apt_debconf]
+  changed_when: false
+- name: update apt packages
+  apt: {update_cache: yes}
+  when: copybmlist.changed
+  tags: [apt_update]
+- name: update & install prerequisites
+  package:
+    cache_valid_time: 3600
+    update_cache: yes
+    name: "{{bluemind_apt_pkgs}}"
+    state: present
+    allow_unauthenticated: yes
+  tags: [apt_install]

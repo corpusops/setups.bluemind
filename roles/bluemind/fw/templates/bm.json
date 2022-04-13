@@ -1,0 +1,11 @@
+{
+{% set rules = [] %}
+{% for port in bluemind_allowed_ports %}
+{% 		set _ = rules.append("iptables -w -t filter -I INPUT 1 -p tcp --dport "+(port|string)+" -j ACCEPT") %}
+{% 		set _ = rules.append(rules[-1].replace('iptables', 'ip6tables')) %}
+{% endfor %}
+{% for ip in bluemind_allowed_ips %}
+{% 		set _ = rules.append("iptables -w -t filter -I INPUT 1 -s "+ip+" -j ACCEPT") %}
+{% endfor %}
+"rules": {{(rules|to_nice_json)}}
+}
