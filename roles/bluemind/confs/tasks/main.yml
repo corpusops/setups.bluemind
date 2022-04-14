@@ -1,0 +1,31 @@
+- include_role: {name: corpusops.roles/simpleconfigs/wrapper}
+  vars:
+    configitems:
+    - {dest: /etc/mailname}
+    - {dest: /etc/bm/bm.ini}
+    - {dest: /etc/postfix/transport-custom.map}
+    - {dest: /etc/postfix/localaliases}
+    - {dest: /etc/postfix/virtual_alias_local}
+  tags: [layout_confs]
+- copy:
+    force: true
+    content: |-
+      #
+      {{bluemind_bm_cli_ini}}
+      #
+    dest: /etc/bm/default/bm-cli.ini
+- copy:
+    force: true
+    content: |-
+      #
+      {{bluemind_bm_es_ini}}
+      #
+    dest: /etc/bm/local/bm-elasticsearch.ini
+- shell: "postmap {{item}}"
+  tags: [layout_postmap]
+  loop:
+  - /etc/postfix/transport-custom.map
+  - /etc/postfix/virtual_alias_local
+- shell: "postalias {{item}}"
+  tags: [layout_postalias]
+  loop: [/etc/postfix/localaliases]

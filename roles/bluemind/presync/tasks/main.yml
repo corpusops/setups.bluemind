@@ -21,6 +21,6 @@
 - include_role: {name: corpusops.roles/simpleconfigs/wrapper}
   vars:
     configitems:
-    - src: ../layout/templates/etc/bm/bm.ini
+    - src: ../confs/templates/etc/bm/bm.ini
       dest:  "{{bluemind_sync_rsync_dest}}/etc/bm/bm.ini"
   tags: [presync_configs]
