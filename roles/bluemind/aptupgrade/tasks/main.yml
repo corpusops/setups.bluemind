@@ -6,3 +6,4 @@
     upgrade: dist
     allow_unauthenticated: yes
   tags: [aptupgrade_install]
+  environment: "{{bluemind_exec_env}}"

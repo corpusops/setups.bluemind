@@ -2,7 +2,6 @@
 bluemind_subscriptions_folder: "{{role_path}}/../../../data"
 bluemind_subscriptions_dest: "{{bluemind_subscriptions_folder}}/{{bluemind_version}}"
 bluemind_repo_file_path: /etc/apt/sources.list.d/bm.list
-bluemind_nginx_dh: "/etc/nginx/bm_dhparam.pem"
 bluemind_no_mails: ""
 bluemind_no_data: ""
 bluemind_no_db_restore: ""
@@ -187,3 +186,5 @@ bluemind_apt_pkgs: |
   {%-  set _ = pkgs.extend(['bm-plugin-admin-console-ldap-import', 'bm-plugin-core-lic', 'bm-core-upgraders']) %}
   {%- endif %}
   {{-pkgs|to_json}}
+bluemind_exec_env:
+    OPENSSL_CONF: /etc/ssl/

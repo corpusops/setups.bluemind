@@ -4,8 +4,8 @@
   tags: [layout]
 - include_role: {name: bluemind/apt}
   tags: [apt]
-- include_role: {name: bluemind/nginxdh}
-  tags: [nginxdh]
+- include_role: {name: bluemind/fixsslconf}
+  tags: [fixsslconf]
 - include_role: {name: bluemind/confs}
   tags: [confs]
 - include_role: {name: bluemind/filters}

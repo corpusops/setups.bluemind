@@ -1,9 +1,0 @@
-- stat: {path: "{{bluemind_nginx_dh}}"}
-  register: nginxp
-- when: not nginxp.stat.exists
-  block:
-  - package: {name: [rng-tools], state: present}
-  - shell: |
-      set -e
-      export OPENSSL_CONF=/etc/ssl
-      openssl dhparam -out "{{bluemind_nginx_dh}}" 4096

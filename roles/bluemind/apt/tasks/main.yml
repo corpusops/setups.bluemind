@@ -38,3 +38,4 @@
     state: present
     allow_unauthenticated: yes
   tags: [apt_install]
+  environment: "{{bluemind_exec_env}}"
