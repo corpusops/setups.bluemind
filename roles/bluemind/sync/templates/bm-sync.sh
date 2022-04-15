@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 ###
 export SDEBUG="${SDEBUG-}"
+export BM_URL="${BM_RL-{{bluemind_ext_mailname}}}"
 export BM_ORIG="${BM_ORIG-{{bluemind_orig}}}"
 export ORIG_IP="${ORIG_IP-{{bluemind_orig_ip}}}"
 export DEST_IP="${DEST_IP-{{bluemind_ip}}}"
@@ -10,6 +11,7 @@ export NO_DATA="${NO_DATA-{{bluemind_no_data|default('')}}}"
 export NO_MAILS="${NO_MAILS-{{bluemind_no_mails|default('')}}}"
 export NO_ES="${NO_ES-{{bluemind_no_es|default('')}}}"
 export NO_CONF="${NO_CONF-{{NO_CONF|default('')}}}"
+export NO_NGINX="${NO_NGINX-{{NO_NGINX|default('')}}}"
 export NO_REPAIR="${NO_REPAIR-{{NO_REEPAIR|default('')}}}"
 export NO_DB="${NO_DB-{{NO_DB|default('')}}}"
 export NO_DB_RESTORE="${NO_DB_RESTORE-{{bluemind_no_db_restore|default('')}}}"
@@ -25,8 +27,8 @@ die_in_error_() { if [ "x${1-$?}" != "x0" ];then echo "FAILED: $@">&2; exit 1; f
 die_in_error() { die_in_error_ $? $@; }
 retry() {
     local n=1
-	local max=${max:-5}
-	local delay=${delay:-1}
+  local max=${max:-5}
+  local delay=${delay:-1}
     while true;do
         "$@" && break || {
             if [[ $n -lt $max ]]; then
@@ -34,9 +36,9 @@ retry() {
                 log "Command failed. Attempt $n/$max"
                 sleep $delay
             else
-              	die_in_error "The command has failed after $n attempts."
+                die_in_error "The command has failed after $n attempts."
             fi
-		}
+    }
   done
 }
 
@@ -54,6 +56,12 @@ if [[ -z $NO_DATA ]];then
             $RSYNCD ${BM_ORIG}:/var/spool/bm-elasticsearch/ $SYNC_PREFIX/var/spool/bm-elasticsearch/
         fi
     fi
+    if [[ -z $NGINX ]];then
+        sed -i -r \
+            -e 's/(set [$]bmexternalurl )(.*)/\1'"$BM_URL"';/g' \
+            -e "s/server_name .*/server_name $BM_URL;/g" \
+        -i  /etc/nginx/bm-externalurl.conf /etc/nginx/bm-servername.conf
+    fi
     if [[ -z $NO_DB ]];then
         if [[ -z $NO_DB_RESTORE ]];then
              ( ssh ${BM_ORIG} "PGPASSWORD={{bluemind_orig_pg_password}} pg_dump -U {{bluemind_orig_pg_user}} -h {{bluemind_orig_pg_host}} {{bluemind_orig_pg_db}}" > /tmp/db.sql ) &&\
@@ -70,6 +78,8 @@ if [[ -z $NO_DATA ]];then
                     -c "update t_server set ip='$DEST_IP' where ip='$ORIG_IP';";\
                     psql -h {{bluemind_pg_host}} -U {{bluemind_pg_user}} -d {{bluemind_pg_db}} \
                     -c "update rc_users set mail_host = '$DEST_IP' where mail_host='$ORIG_IP';"; \
+                    psql -h {{bluemind_pg_host}} -U {{bluemind_pg_user}} -d {{bluemind_pg_db}} \
+                    -c "update t_systemconf set configuration = configuration  || hstore('external_url', '$BM_URL') || hstore('host', '$DEST_IP') || hstore('hz-member-address', '$DEST_IP');"; \
                 fi; \
             )
             die_in_error pgsql fix
@@ -105,7 +115,7 @@ if [[ -z $NO_RESTART ]];then
 fi
 
 max=120 retry \
-	curl -fsSk -X GET -H "X-BM-ApiKey: $(cat /etc/bm/bm-core.tok)" https://localhost/api/auth || die_in_error "bluemind ko"
+    curl -fsSk -X GET -H "X-BM-ApiKey: $(cat /etc/bm/bm-core.tok)" https://localhost/api/auth || die_in_error "bluemind ko"
 if [[ -z $NO_REPAIR  ]];then
     if ! ( curl -fsSk -X POST -H "X-BM-ApiKey: $(cat /etc/bm/bm-core.tok)" https://localhost/api/system/maildelivery/mgmt/_repair >/dev/null; );then
         die_in_error "failed bluemind repair"
