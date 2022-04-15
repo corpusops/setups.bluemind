@@ -15,6 +15,7 @@ export NO_NGINX="${NO_NGINX-{{NO_NGINX|default('')}}}"
 export NO_REPAIR="${NO_REPAIR-{{NO_REEPAIR|default('')}}}"
 export NO_DB="${NO_DB-{{NO_DB|default('')}}}"
 export NO_DB_RESTORE="${NO_DB_RESTORE-{{bluemind_no_db_restore|default('')}}}"
+export USE_DB_DUMP="${USE_DB_DUMP-{{bluemind_no_db_sync|default('')}}}"
 export NO_DB_FIX="${NO_DB_FIX-{{bluemind_no_db_fix|default('')}}}"
 export RSYNC="rsync -aAHv --numeric-ids"
 export RSYNCD="$RSYNC --delete"
@@ -64,11 +65,17 @@ if [[ -z $NO_DATA ]];then
     fi
     if [[ -z $NO_DB ]];then
         if [[ -z $NO_DB_RESTORE ]];then
-             ( ssh ${BM_ORIG} "PGPASSWORD={{bluemind_orig_pg_password}} pg_dump -U {{bluemind_orig_pg_user}} -h {{bluemind_orig_pg_host}} {{bluemind_orig_pg_db}}" > /tmp/db.sql ) &&\
-                su postgres - -c "dropdb {{bluemind_pg_db}} && createdb {{bluemind_pg_db}}" && \
+            if [[ -z $USE_DB_DUMP ]];then
+                service postgresql stop || /bin/true
+                $RSYNCD ${BM_ORIG}:/var/lib/postgresql/ $SYNC_PREFIX/var/lib/postgresql/
+                service postgresql restart
+            else
+                ( ssh ${BM_ORIG} "PGPASSWORD={{bluemind_orig_pg_password}} pg_dump -U {{bluemind_orig_pg_user}} -h {{bluemind_orig_pg_host}} {{bluemind_orig_pg_db}}" > /tmp/db.sql ) &&\
+                    su postgres - -c "dropdb {{bluemind_pg_db}} && createdb {{bluemind_pg_db}}" && \
                 ( export PGPASSWORD={{bluemind_pg_password}}; \
-                cat /tmp/db.sql | psql -U {{bluemind_pg_user}} -h {{bluemind_pg_host}} {{bluemind_pg_db}}; \
+                    cat /tmp/db.sql | psql -U {{bluemind_pg_user}} -h {{bluemind_pg_host}} {{bluemind_pg_db}}; \
                 )
+            fi
             die_in_error pgsql restore
         fi
         if [[ -z $NO_DB_FIX ]];then

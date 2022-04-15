@@ -124,6 +124,7 @@ bluemind_sync_rsync: "rsync -AHazv --numeric-ids \
   --exclude=\"etc/burp*\" \
   --exclude=\"etc/network*\" \
   --exclude=\"etc/netplan*\""
+bluemind_sync_rsyncd: "{{bluemind_sync_rsync}} --delete"
 bluemind_sync_rsync_orig: "{{bluemind_orig_baremetal_ip}}:/var/lib/lxc/{{bluemind_orig_lxc_name}}/rootfs"
 bluemind_sync_rsync_dest: "/var/lib/lxc/{{bluemind_lxc_name}}/rootfs/"
 bluemind_mailshare_path: "Dossiers partag&AOk-s"
