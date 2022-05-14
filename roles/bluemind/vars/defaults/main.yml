@@ -135,7 +135,7 @@ bluemind_sync_rsync: "rsync -AHazv --numeric-ids \
 bluemind_sync_rsyncd: "{{bluemind_sync_rsync}} --delete"
 bluemind_sync_rsync_orig: "{{bluemind_orig_baremetal_ip}}:/var/lib/lxc/{{bluemind_orig_lxc_name}}/rootfs"
 bluemind_sync_rsync_dest: "/var/lib/lxc/{{bluemind_lxc_name}}/rootfs/"
-bluemind_mailshare_path: "Dossiers partag&AOk-s" 
+bluemind_mailshare_path: "Dossiers partag&AOk-s"
 bluemind_trashcleanup_cron: |
   MAILTO=""
   PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
@@ -169,11 +169,12 @@ bluemind_bm_cli_ini: |
   #
   MEM=2000
   #
-bluemind_bm_es_mem: 2000
+bluemind_bm_es_dmem: "2048"
+bluemind_bm_es_mem: "5120"
 bluemind_bm_es_ini: |-
   #
   MEM={{bluemind_bm_es_mem}}
-  DMEM={{bluemind_bm_es_mem}}
+  DMEM={{bluemind_bm_es_dmem}}
   #
 bluemind_api_token: ""
 bluemind_http_headers: {X-BM-ApiKey: "{{bluemind_api_token.strip()}}"}

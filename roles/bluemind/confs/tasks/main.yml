@@ -14,13 +14,8 @@
       {{bluemind_bm_cli_ini}}
       #
     dest: /etc/bm/default/bm-cli.ini
-- copy:
-    force: true
-    content: |-
-      #
-      {{bluemind_bm_es_ini}}
-      #
-    dest: /etc/bm/local/bm-elasticsearch.ini
+- include_role: {name: bluemind/es}
+  tags: [es]
 - shell: "postmap {{item}}"
   tags: [layout_postmap]
   loop:

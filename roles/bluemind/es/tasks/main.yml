@@ -1,0 +1,8 @@
+- copy:
+    dest: "{{item}}"
+    force: true
+    content: "{{bluemind_bm_es_ini}}"
+  loop:
+  - /etc/bm-elasticsearch/mem_conf.ini
+  - /etc/bm/default/bm-elasticsearch.ini
+  - /etc/bm/local/bm-elasticsearch.ini

@@ -17,7 +17,7 @@
 - include_role: {name: bluemind/spamcollect}
   tags: [spamcollect]
 - include_role: {name: bluemind/crons}
-  tags: [crons]
+  tags: [crons] 
 - include_role: {name: bluemind/fw}
   tags: [fw]
 - include_role: {name: bluemind/backups}
