@@ -1,1 +1,31 @@
 # playbooks for helping managing bluemind infrastructure
+- roles:
+ 	- `bluemind/vars`: variables
+	- `bluemind/api`: configure un venv avec les binding python dans /srv
+	- `bluemind/apt`: configure apt et la souscription
+	- `bluemind/aptupgrade`: run aptupgrade
+	- `bluemind/break`: breakpoint/pause
+	- `bluemind/configure`: configure tout
+		- `bluemind/confs`: bluemind conf files
+		- `bluemind/crons`: bluemind crons
+		- `bluemind/backups`: (de)active dataprotect
+			- `bluemind/dataprotect`: dataprotect
+		- `bluemind/disable_crons`: stop all crons
+		- `bluemind/install`: install packages
+		- `bluemind/filters`: install imapfilter crons
+		- `bluemind/spamcollect`: install spamcollect cron
+		- `bluemind/fixsslconf`: fix openssl.cnf
+		- `bluemind/hosts`: add bm hosts to /etc/hosts
+		- `bluemind/fw`: configure iptables
+		- `bluemind/toggle_es_checks`: (d)enable es checks
+		- `bluemind/layout`: files/directory layout
+		- `bluemind/token`: load bm.tok as ansible var
+	- `bluemind/migrate`:
+	- `bluemind/teleport`: teleport data from one lxc to another
+		- `bluemind/hardstop`:
+		- `bluemind/presync`:
+		- `bluemind/restart`: restart bm LXC
+	- `bluemind/sync`: teleport bm data from one bm on to another bm host from within that another
+	- `bluemind/upgrade`: upgrade bm to latest
+	- `bluemind/upgrade4`:
+		- `bluemind/reconsolidate`: reconsolidate spools

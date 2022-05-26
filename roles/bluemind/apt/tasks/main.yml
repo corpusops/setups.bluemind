@@ -1,3 +1,4 @@
+- debug: {msg: "{{bluemind_version}}"}
 - block:
   - file: {state: directory, path: "{{item}}"}
     loop: ["{{bluemind_subscriptions_dest}}"]

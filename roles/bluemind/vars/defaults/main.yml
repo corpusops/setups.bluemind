@@ -78,9 +78,11 @@ bluemind_pg_port: 5432
 bluemind_pg_user: bj
 bluemind_pg_db: bj
 bluemind_dbsmartbackup_cron: |-
+  #
   MAILTO=
   PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
   0 2 * * * root /srv/apps/dbsmartbackup/run_dbsmartbackups.sh --quiet --no-colors
+  #
 bluemind_imapfilter_pkgs: "{{bluemind_imapfilter_pkgs_common+bluemind_imapfilter_pkgs_1604}}"
 bluemind_imapfilter_pkgs_1604: ["liblua5.2-dev", "liblua5.2-0"]
 bluemind_imapfilter_pkgs_common:

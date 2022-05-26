@@ -12,13 +12,14 @@ export NO_DATA="${NO_DATA-{{bluemind_no_data|default('')}}}"
 export NO_MAILS="${NO_MAILS-{{bluemind_no_mails|default('')}}}"
 export NO_ES="${NO_ES-{{bluemind_no_es|default('')}}}"
 export NO_CONF="${NO_CONF-{{NO_CONF|default('')}}}"
+export NO_CHANGE_URL="${NO_CHANGE_URL-}"
 export NO_NGINX="${NO_NGINX-{{NO_NGINX|default('')}}}"
 export NO_REPAIR="${NO_REPAIR-{{NO_REEPAIR|default('')}}}"
 export NO_DB="${NO_DB-{{NO_DB|default('')}}}"
 export NO_DB_RESTORE="${NO_DB_RESTORE-{{bluemind_no_db_restore|default('')}}}"
 export USE_DB_DUMP="${USE_DB_DUMP-{{bluemind_no_db_sync|default('')}}}"
 export NO_DB_FIX="${NO_DB_FIX-{{bluemind_no_db_fix|default('')}}}"
-export RSYNC="rsync -aAHv --numeric-ids"
+export RSYNC="rsync -aAHzv --numeric-ids"
 export RSYNCD="$RSYNC --delete"
 ###
 [[ -n $SDEBUG ]] && set -x
@@ -59,14 +60,6 @@ if [[ -z $NO_DATA ]];then
             $RSYNCD ${BM_ORIG}:/var/spool/bm-elasticsearch/ $SYNC_PREFIX/var/spool/bm-elasticsearch/
         fi
     fi
-    if [[ -z $NGINX ]];then
-        if [[ -z $BM_OLD_URL ]];then
-            BM_OLD_URL=$(ssh $BM_ORIG "PGPASSWORD={{bluemind_pg_password}} \
-                psql -d {{bluemind_pg_db}} -h localhost -U {{bluemind_pg_user}} -Aqt \
-                -c \"select configuration->'external-url' from t_systemconf;\"")
-        fi
-        while read f;do sed -i -re "s/$BM_OLD_URL/$BM_URL/g" "$f"; done < <(find /etc/nginx -type f)
-    fi
     if [[ -z $NO_DB ]];then
         if [[ -z $NO_DB_RESTORE ]];then
             if [[ -z $USE_DB_DUMP ]];then
@@ -82,22 +75,6 @@ if [[ -z $NO_DATA ]];then
             fi
             die_in_error pgsql restore
         fi
-        if [[ -z $NO_DB_FIX ]];then
-            ( export PGPASSWORD={{bluemind_pg_password}}; \
-                if [[ -n $ORIG_IP ]] && [[ -n $DEST_IP ]];then \
-                    psql -h {{bluemind_pg_host}} -U {{bluemind_pg_user}} -d {{bluemind_pg_db}} \
-                    -c "update t_server set ip='$DEST_IP' where ip='$ORIG_IP';";\
-                    psql -h {{bluemind_pg_host}} -U {{bluemind_pg_user}} -d {{bluemind_pg_db}} \
-                    -c "update rc_users set mail_host = '$DEST_IP' where mail_host='$ORIG_IP';"; \
-                    psql -h {{bluemind_pg_host}} -U {{bluemind_pg_user}} -d {{bluemind_pg_db}} \
-                    -c "update t_systemconf set configuration = configuration \
-                            || hstore('external-url', '$BM_URL') \
-                            || hstore('host', '$DEST_IP') \
-                            || hstore('hz-member-address', '$DEST_IP');"; \
-                fi; \
-            )
-            die_in_error pgsql fix
-        fi
     fi
 fi
 if [[ -z $NO_CONF ]];then
@@ -110,30 +87,9 @@ if [[ -z $NO_CONF ]];then
     scp "${BM_ORIG}:/etc/postfix/{{'{{'}}main,master}.cf,*.db,virtual*,local*,*map,*flat}" $SYNC_PREFIX/etc/postfix/
     scp    ${BM_ORIG}:/usr/share/bm-elasticsearch/config/elasticsearch.yml \
           $SYNC_PREFIX/usr/share/bm-elasticsearch/config/elasticsearch.yml
-    if [[ -n $EXTERNAL_URL ]];then
-        sed -i -r \
-            -e "s/external-url =.*/external-url = $EXTERNAL_URL/g" \
-            /etc/bm/bm.ini
-    fi
-    if [[ -n $DEST_IP ]];then
-        sed -i -r \
-            -e "s/host =.*/host = $DEST_IP/g" \
-            -e "s/hz-member-address =.*/hz-member-address = $DEST_IP/g" \
-            /etc/bm/bm.ini
-    fi
+fi
+if [[ -z $NO_CHANGE_URL ]];then
+    /sbin/bm-change-url.sh "$BM_URL" || die_in_error post change url
 fi
 
-if [[ -z $NO_RESTART ]];then
-    service postfix restart || die_in_error restart postfix
-    bmctl           restart || die_in_error restart bmctl
-fi
-
-max=120 retry \
-    curl -fsSk -X GET -H "X-BM-ApiKey: $(cat /etc/bm/bm-core.tok)" https://localhost/api/auth || die_in_error "bluemind ko"
-if [[ -z $NO_REPAIR  ]];then
-    if ! ( curl -fsSk -X POST -H "X-BM-ApiKey: $(cat /etc/bm/bm-core.tok)" https://localhost/api/system/maildelivery/mgmt/_repair >/dev/null; );then
-        die_in_error "failed bluemind repair"
-    fi
-    log "postfix reconstructed"
-fi
-# vim:set et sts=4 ts=4 tw=80:
+# vim:set et sts=4 ts=4 tw=120:
