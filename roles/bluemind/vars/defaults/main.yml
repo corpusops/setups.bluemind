@@ -126,6 +126,7 @@ bluemind_sync_rsync: "rsync -AHazv --numeric-ids \
   --exclude=\"etc/hostname\" \
   --exclude=\"etc/duplicity*\" \
   --exclude=\"etc/cron.d/*burp*\" \
+  --exclude=\"etc/cron.d/bmsync\" \
   --exclude=\"etc/*burp*\" \
   --exclude=\"etc/burp*\" \
   --exclude=\"etc/network*\" \
