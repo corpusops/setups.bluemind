@@ -1,0 +1,7 @@
+- template:
+    src: "{{item}}"
+    dest: "/root/{{item}}"
+    force: true
+    mode: "700"
+  with_items: [trash_cleanup.sh]
+- include_role: {name: bluemind/trashcleanup/crons}

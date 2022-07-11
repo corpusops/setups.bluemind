@@ -1,0 +1,5 @@
+- copy:
+    force: true
+    content: "{{bluemind_trashcleanup_cron}}"
+    dest: /etc/cron.d/trashcleanup
+    mode: "0644"
