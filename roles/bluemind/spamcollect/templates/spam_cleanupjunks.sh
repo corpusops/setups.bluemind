@@ -30,7 +30,7 @@ log_() {
     if [[ -n ${NO_LOGGER_SLUG} ]];then
         logger_slug=""
     fi
-    printf "${logger_slug}${msg_color}$(echo "${@}")${NORMAL}\n" >&2;
+    echo -e "${logger_slug}${msg_color}$(echo "${@}")${NORMAL}" >&2;
     printf "" >&2;  # flush
 }
 
@@ -98,6 +98,6 @@ while read junkf;do
     domain=$(echo $junkf |sed -re "s/.*\/domain\/([^\/]+)\/([^/]+)\/.*$/\2/")
     mbox=$(echo $junkf |sed -re "s/.*\/(user\/.*)$/\1/")
     log "Reconstructing $mbox@$domain"
-    /usr/lib/cyrus/bin/reconstruct  -U -f $mbox@$domain
+    vv reconstruct  -U -f $mbox@$domain
 done < <(find "${CYRUS_SPOOL}" -name Junk -type d)
 # vim:set et sts=4 ts=4 tw=0:
