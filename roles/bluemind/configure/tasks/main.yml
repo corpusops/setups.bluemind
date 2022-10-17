@@ -3,21 +3,23 @@
 - include_role: {name: bluemind/layout}
   tags: [layout]
 - include_role: {name: bluemind/apt}
-  tags: [apt] 
+  tags: [apt]
 - include_role: {name: bluemind/fixlogrotate}
   tags: [fixlogrotate]
+- include_role: {name: bluemind/fixsyncclient}
+  tags: [fixsyncclient]
 - include_role: {name: bluemind/fixsslconf}
   tags: [fixsslconf]
 - include_role: {name: bluemind/confs}
   tags: [confs]
 - include_role: {name: bluemind/filters}
-  tags: [filters]       
+  tags: [filters]
 - include_role: {name: bluemind/trashcleanup}
-  tags: [trashcleanup]   
+  tags: [trashcleanup]
 - include_role: {name: bluemind/spamcollect}
   tags: [spamcollect]
 - include_role: {name: bluemind/crons}
-  tags: [crons] 
+  tags: [crons]
 - include_role: {name: bluemind/fw}
   tags: [fw]
 - include_role: {name: bluemind/backups}

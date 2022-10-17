@@ -1,0 +1,24 @@
+# bug for 1804 and earlier: OPENSSL_CONF undef prevents installer from creating correctly dhparams:
+#   libssl_conf.so: cannot open shared object file: No such file or directory
+- copy:
+    force: true
+    content: |-
+            #!/usr/bin/env bash
+            set -ex
+            nbfi=$(find /var/lib/cyrus/sync/core/ -mmin +60 -type f|wc -l)
+            #nbfi=$(find /var/lib/cyrus/sync/core/ -mtime -200 |wc -l)
+            if [ $nbfi -gt 0 ];then
+                for i in 0 1 2 3;do systemctl restart bm-cyrus-syncclient@$i.service;done
+            fi
+            #
+    dest: /root/heal_sync_client.sh
+    mode: 0755
+- copy:
+    force: true
+    content: |-
+            PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+            MAILTO=""
+            */10 * * * * root /root/heal_sync_client.sh >/dev/null 2>&1
+            #
+    dest: /etc/cron.d/heal_sync_client
+    mode: 0755
